@@ -22,6 +22,4 @@ for dirpaths, dirnames, filenames in os.walk("pdf"):
                 output.addPage(input.getPage(i).rotateClockwise(90))
 
             outputStream = open(fnamepath, "wb")
-            output.write(outputStream) 
-
-
+            output.write(outputStream)
