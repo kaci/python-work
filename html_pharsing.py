@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # html tables pharse csv
 
 import glob, codecs, csv
