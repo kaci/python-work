@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sudo ewfmount *.E01 /mnt/ewf_image
+i=0
+sudo mmls /mnt/ewf_image/ewf1 | grep NTFS | cut -d" " -f6 | while read -r line; 
+	do let "digit = $(echo $line | sed 's/^0*//')*512";
+	m_dir="p"$i"_ntfs";
+	sudo mount -t ntfs-3g -o ro,loop,show_sys_files,streams_interface=windows,offset=$digit /mnt/ewf_image/ewf1 /mnt/$m_dir;
+	i=$(($i+1));
+done
