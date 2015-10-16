@@ -1,0 +1,110 @@
+#!/bin/bash
+
+for file in /home/elem/pdf/*.pdf
+do
+  pdftohtml -xml $file 1> /dev/null
+done
+
+rm /home/elem/pdf/*.jpg
+rm /home/elem/pdf/*.png
+
+echo "Szla kelte;Szla sorszam;Vatera jutalek;Vatera eladar;Teszvesz jutalek;Teszvesz eladar" > vatera.csv
+
+for file in /home/elem/pdf/*.xml
+do
+  datum=`cat $file | grep -A1 "Számla kelte" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1`
+  szlaszam=`cat $file | grep -A1 "Számlaszám" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1`
+  
+  szam='^[0-9]+$'
+  
+  new_datum=`echo $datum | tr -d '.'`
+  # evek, szamla tipusok szerint szedem szet
+  if (($new_datum<=20101207)); then
+   vjut=`cat $file | grep -A7 "Értékesítési jutalék" | tail -1 | cut -d'>' -f2 | cut -d'.' -f1`
+   if ! [[ $vjut =~ $szam ]] ; then vjut=0; fi
+
+   if ((0<=$vjut && $vjut<=1200)); then vertek=`gawk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", vj*100/6); print rounded }'`;
+   elif ((1200<$vjut && $vjut<=4400)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-1200)*100/4+20000); print rounded }'`;
+   elif ((4400<$vjut && $vjut<=7400)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-4400)*100/1,5+100000); print rounded }'`;
+   elif ((7400<$vjut && $vjut<=999999)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-7400)*100+300000); print rounded }'`;
+   fi
+   
+   tjut=`cat $file | grep -A7 "Teszvesz Értékesítési jutalék" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' '`
+   if ! [[ $tjut =~ $szam ]] ; then tjut=0; fi
+  
+   if ((0<=$tjut && $tjut<=120)); then tertek=`gawk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", tj*100/4); print rounded }'`;
+   elif ((120<$tjut && $tjut<=1830)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-120)*100/3+3000); print rounded }'`;
+   elif ((1830<$tjut && $tjut<=5430)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-1830)*100/1,5+60000); print rounded }'`;
+   elif ((5430<$tjut && $tjut<=999999)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-5430)*100+300000); print rounded }'`;
+   fi;
+  elif ((20101212<=$new_datum && $new_datum<=20111224)); then
+   vjut=`cat $file | grep -A7 "Vatera Értékesítési jutalék" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' '`
+   if ! [[ $vjut =~ $szam ]] ; then vjut=0; fi
+
+   if ((0<=$vjut && $vjut<=1200)); then vertek=`gawk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", vj*100/6); print rounded }'`;
+   elif ((1200<$vjut && $vjut<=4400)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-1200)*100/4+20000); print rounded }'`;
+   elif ((4400<$vjut && $vjut<=7400)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-4400)*100/1,5+100000); print rounded }'`;
+   elif ((7400<$vjut && $vjut<=999999)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-7400)*100+300000); print rounded }'`;
+   fi
+   
+   tjut=`cat $file | grep -A7 "Teszvesz Értékesítési jutalék" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' '`
+   if ! [[ $tjut =~ $szam ]] ; then tjut=0; fi
+  
+   if ((0<=$tjut && $tjut<=120)); then tertek=`gawk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", tj*100/4); print rounded }'`;
+   elif ((120<$tjut && $tjut<=1830)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-120)*100/3+3000); print rounded }'`;
+   elif ((1830<$tjut && $tjut<=5430)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-1830)*100/1,5+60000); print rounded }'`;
+   elif ((5430<$tjut && $tjut<=999999)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-5430)*100+300000); print rounded }'`;
+   fi;
+  else
+   vjut=`cat $file | grep -A5 "Vatera Értékesítési jutalék" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' '`
+   if ! [[ $vjut =~ $szam ]] ; then vjut=0; fi
+
+   if ((0<=$vjut && $vjut<=1800)); then vertek=`gawk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", vj*100/6); print rounded }'`;
+   elif ((1800<$vjut && $vjut<=4600)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-1800)*100/4+30000); print rounded }'`;
+   elif ((4600<$vjut && $vjut<=6100)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-4600)*100/1,5+100000); print rounded }'`;
+   elif ((6100<$vjut && $vjut<=999999)); then vertek=`awk -v vj=$vjut 'BEGIN { rounded = sprintf("%.0f", (vj-6100)*100+200000); print rounded }'`;
+   fi
+  
+   tjut=`cat $file | grep -A5 "Teszvesz Értékesítési jutalék" | tail -1 | cut -d'>' -f2 | cut -d'<' -f1 | tr -d ' '`
+   if ! [[ $tjut =~ $szam ]] ; then tjut=0; fi
+  
+   if ((0<=$tjut && $tjut<=200)); then tertek=`gawk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", tj*100/4); print rounded }'`;
+   elif ((200<$tjut && $tjut<=1850)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-200)*100/3+5000); print rounded }'`;
+   elif ((1850<$tjut && $tjut<=3950)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-1850)*100/1,5+60000); print rounded }'`;
+   elif ((3950<$tjut && $tjut<=999999)); then tertek=`awk -v tj=$tjut 'BEGIN { rounded = sprintf("%.0f", (tj-3950)*100+200000); print rounded }'`;
+   fi;
+  fi
+  echo "$datum;$szlaszam;$vjut;$vertek;$tjut;$tertek" >> vatera.csv
+done
+
+rm /home/elem/pdf/*.xml
+
+sort -t\; -k 1,1n vatera.csv -o vatera.csv
+
+ev_regi=0
+i=0
+while read sor; do
+  ev="$(echo $sor | head -c4)"
+  vjut="$(echo $sor | cut -d';' -f3)"
+  vertek="$(echo $sor | cut -d';' -f4)"
+  tjut="$(echo $sor | cut -d';' -f5)"
+  tertek="$(echo $sor | cut -d';' -f6)"
+  
+  if [ "$ev_regi" -ne "$ev" 2>/dev/null ] 
+    then ossz[$i]="$ev_regi;osszesen;$sum_vjut;$sum_vertek;$sum_tjut;$sum_tertek"; 
+	sum_vjut=0; sum_vertek=0; sum_tjut=0; sum_tertek=0; 
+	let i+="1" ;
+  fi
+  
+  let sum_vjut+=vjut 2>/dev/null
+  let sum_vertek+=vertek 2>/dev/null
+  let sum_tjut+=tjut 2>/dev/null
+  let sum_tertek+=tertek 2>/dev/null
+  ev_regi=$ev  
+done < vatera.csv
+#echo ";;;;;" >> vatera.csv
+while [ "$i" -ne "-1" ]; do
+  echo "${ossz[$i]}" >> vatera.csv
+  let i-=1
+done
+echo "$ev_regi;osszesen;$sum_vjut;$sum_vertek;$sum_tjut;$sum_tertek" >> vatera.csv
