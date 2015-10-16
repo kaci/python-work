@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# html tables pharse csv
+# html tables pharse to csv
 
 import glob, codecs, csv
 from bs4 import BeautifulSoup
