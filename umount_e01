@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo umount /mnt/p0_ntfs
+sudo umount /mnt/p1_ntfs
+sudo umount /mnt/p2_ntfs
+sudo umount /mnt/ewf_image
