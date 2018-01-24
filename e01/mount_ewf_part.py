@@ -1,14 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# this code mount E01 to ewf1, and all ntfs partitions in the source ewf file
-# use: python ewf_part_mount.py 'path.E01'
+'''
+This code mount E01 to ewf1, and all ntfs partitions in the source ewf file
+use: python mount_ewf_part.py 'path.E01'
+'''
 
 import subprocess, sys
 from time import sleep
 
-def ewf_mount(filename):    
-    path_ewf = input('destination mount folder for ewf: ').strip()    
+def ewf_mount(filename):
+    path_ewf = input('destination mount folder for ewf: ').strip()
     subprocess.Popen(['sudo', 'ewfmount', filename, path_ewf], stdin = subprocess.PIPE).communicate()
     subprocess.Popen(['sudo', 'mmls', path_ewf + '/ewf1'], stdin = subprocess.PIPE)
     part_mount(path_ewf)
@@ -31,8 +33,7 @@ def ewf_umount():
     subprocess.Popen(['sudo', 'umount', '/mnt/part1'], stdin = subprocess.PIPE)
     subprocess.Popen(['sudo', 'umount', '/mnt/part2'], stdin = subprocess.PIPE)
     sleep(1)
-    subprocess.Popen(['sudo', 'umount', '/mnt/efi'], stdin = subprocess.PIPE)
+    subprocess.Popen(['sudo', 'umount', '/mnt/ewf'], stdin = subprocess.PIPE)
     
-#ewf_mount(sys.argv[1])
-#python -c 'from ewf_part_mount import *; ewf_mount("/mnt/Ta/Le/nav/fekiszeverkklac/fekiszerverkklac.E01")'
-#python -c 'from ewf_part_mount import *; ewf_umount()'
+ewf_mount(sys.argv[1])
+#ewf_umount()
